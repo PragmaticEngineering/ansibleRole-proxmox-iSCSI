@@ -1,0 +1,3 @@
+---
+# tasks file for /etc/ansible/roles/iscsi-multipath
+- include_tasks: iSCSI-configuration.yaml

@@ -1,0 +1,26 @@
+- name: Configure iscsid.conf
+  ansible.builtin.lineinfile:
+    path: /etc/iscsi/iscsid.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^node.startup\s*=', line: 'node.startup = automatic' }
+    - { regexp: '^node.session.timeo.replacement_timeout\s*=', line: 'node.session.timeo.replacement_timeout = 15' }
+- name: Find all default files
+  ansible.builtin.find:
+    paths: "/etc/iscsi/nodes"
+    recurse: yes
+    patterns: 'default'
+  register: default_files
+- name: Configure default file node startup
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: '^node.startup\s*='
+    line: 'node.startup = automatic'
+  loop: "{{ default_files.files }}"
+- name: Configure default file node session timeout replacement timeout
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: '^node.session.timeo.replacement_timeout\s*='
+    line: 'node.session.timeo.replacement_timeout = 15'
+  loop: "{{ default_files.files }}"
